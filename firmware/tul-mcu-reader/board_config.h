@@ -1,0 +1,10 @@
+#pragma once
+
+// J5 on the actual PanLee ZX3D50CE08S-V16-USRC board.
+// Target interface uses GPIO only; J5 +5V is intentionally unused.
+constexpr uint8_t PIN_ISP_MOSI = 10;
+constexpr uint8_t PIN_ISP_MISO = 11;
+constexpr uint8_t PIN_ISP_SCK = 12;
+constexpr uint8_t PIN_TARGET_RESET = 13;
+
+constexpr uint32_t ISP_HALF_PERIOD_US = 100;
