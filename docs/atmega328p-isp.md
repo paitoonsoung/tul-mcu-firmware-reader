@@ -4,6 +4,8 @@
 
 ATmega328P-AU, TQFP-32, installed on the hand-built logic-probe/test instrument supplied for bench testing.
 
+![ATmega328P TQFP-32 ISP pin reference](images/atmega328p-tqfp32-isp-pinout.svg)
+
 ## Target ISP pins
 
 | ATmega328P function | TQFP-32 pin |
@@ -28,6 +30,8 @@ ATmega328P-AU, TQFP-32, installed on the hand-built logic-probe/test instrument 
 | 8 | GPIO21 | Reserved |
 | 2 | GND | Target GND |
 
+![TUL J5 to ATmega328P wiring](images/tul-j5-atmega328p-wiring.svg)
+
 J5 pin 1 (+5V) is deliberately not assigned to target VCC in this proof-of-concept.
 
 ## Electrical rule
@@ -35,6 +39,18 @@ J5 pin 1 (+5V) is deliberately not assigned to target VCC in this proof-of-conce
 The target supply voltage must be measured before connection. The first firmware test assumes a 3.3 V-safe target interface. If the target is powered at 5 V, do not connect ESP32-S3 outputs directly to MOSI, SCK, or RESET; use appropriate level shifting.
 
 MISO must also be level-safe for the ESP32-S3 input.
+
+## Bench measurements
+
+Initial measurements recorded on the physical target:
+
+| Measurement | Observed |
+|---|---:|
+| Target VCC | ~3.2 V |
+| ATmega328P AVCC, pin 18 | 3.04 V |
+| RESET, normal state | ~2.8 V |
+
+Detailed and future measurements are recorded in [bench-log.md](bench-log.md).
 
 ## First test
 
@@ -56,3 +72,7 @@ TARGET OK
 ```
 
 If the signature is not correct, stop and diagnose wiring, RESET behavior, target voltage, clock, and ISP timing before adding Flash-read functionality.
+
+## Real photographs
+
+Actual photographs of the target PCB, component locations, J5 wiring, and the completed enclosure will be added later under [photos/](photos/). The reference diagrams above are documentation graphics, not photographs of the physical board.
