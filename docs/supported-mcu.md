@@ -1,29 +1,53 @@
 # Supported MCU Roadmap
 
-No target MCU is marked as supported yet.
+## First target: ATmega328P
 
-## Selection criteria
+The first physical target selected for development is the ATmega328P-AU in the hand-built logic-probe/test instrument supplied for bench testing.
 
-The first target should be an MCU that is physically available for bench testing and whose programming interface, voltage requirements, memory map, and read/write protocol can be verified directly.
+### Interface
 
-## First-target workflow
+The initial programming interface is AVR serial programming (ISP).
 
-1. Identify the exact MCU part number.
-2. Confirm programming interface and entry sequence.
-3. Confirm target voltage and signal levels.
-4. Read device ID or equivalent identification data.
-5. Read the complete firmware memory.
-6. Save a binary image.
-7. Calculate and record image integrity information.
-8. Verify the saved image against a second read.
-9. Only after read/verify is stable, implement erase/program.
+Required target signals:
+
+- MOSI
+- MISO
+- SCK
+- RESET
+- VCC
+- GND
+
+### ATmega328P TQFP-32 reference pins
+
+| Function | Port | TQFP-32 pin |
+|---|---|---:|
+| MOSI | PB3 | 15 |
+| MISO | PB4 | 16 |
+| SCK | PB5 | 17 |
+| RESET | PC6 | 29 |
+| VCC | VCC | 4 |
+| AVCC | AVCC | 18 |
+| GND | GND | 3, 21 |
+
+### Development sequence
+
+1. Confirm target supply voltage and electrical levels.
+2. Connect the ISP signals through a safe interface.
+3. Enter programming mode.
+4. Read device signature.
+5. Validate the expected ATmega328P signature `1E 95 0F`.
+6. Implement Flash read.
+7. Save the image as BIN on microSD.
+8. Calculate and record image integrity information.
+9. Verify the saved image against a second read.
+10. Only after read/verify is stable, implement erase/program.
 
 ## Status table
 
-| MCU family | Interface | Read | Write | Verify | Status |
-|---|---|---:|---:|---:|---|
-| TBD | TBD | - | - | - | Candidate not selected |
+| MCU | Interface | Detect | Read | Write | Verify | Status |
+|---|---|---:|---:|---:|---:|---|
+| ATmega328P | AVR ISP | Planned | Planned | Planned | Planned | First target |
 
 ## Rule
 
-Do not add an MCU driver to the firmware tree until the exact target device and physical interface have been confirmed.
+No write/erase operation is implemented until the read and verification path has been bench-tested successfully.
