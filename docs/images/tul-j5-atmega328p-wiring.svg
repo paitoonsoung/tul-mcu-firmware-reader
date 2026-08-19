@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <rect width="1000" height="620" fill="white"/>
+  <text x="500" y="42" text-anchor="middle" font-family="Arial" font-size="28" font-weight="bold">TUL J5 → ATmega328P ISP Wiring</text>
+  <text x="500" y="70" text-anchor="middle" font-family="Arial" font-size="16">First bench-test mapping — target power remains separate</text>
+
+  <rect x="80" y="130" width="300" height="370" rx="16" fill="#202020" stroke="#000" stroke-width="4"/>
+  <text x="230" y="170" text-anchor="middle" fill="white" font-family="Arial" font-size="25" font-weight="bold">TUL J5</text>
+  <g font-family="Arial" font-size="19" fill="white">
+    <text x="120" y="220">Pin 1  +5V</text>
+    <text x="120" y="265">Pin 2  GND</text>
+    <text x="120" y="310">Pin 3  GPIO10</text>
+    <text x="120" y="355">Pin 4  GPIO11</text>
+    <text x="120" y="400">Pin 5  GPIO12</text>
+    <text x="120" y="445">Pin 6  GPIO13</text>
+    <text x="120" y="490">Pin 7  GPIO14</text>
+  </g>
+
+  <rect x="620" y="130" width="300" height="370" rx="16" fill="#202020" stroke="#000" stroke-width="4"/>
+  <text x="770" y="170" text-anchor="middle" fill="white" font-family="Arial" font-size="25" font-weight="bold">ATmega328P</text>
+  <g font-family="Arial" font-size="19" fill="white">
+    <text x="660" y="220">PB3 / MOSI — pin 15</text>
+    <text x="660" y="265">PB4 / MISO — pin 16</text>
+    <text x="660" y="310">PB5 / SCK  — pin 17</text>
+    <text x="660" y="355">PC6 / RESET — pin 29</text>
+    <text x="660" y="400">GND — pins 3, 21</text>
+    <text x="660" y="445">VCC — pin 4</text>
+    <text x="660" y="490">AVCC — pin 18</text>
+  </g>
+
+  <g stroke="#444" stroke-width="4" fill="none">
+    <path d="M380 265 C470 265 530 400 620 400"/>
+    <path d="M380 310 C470 310 530 220 620 220"/>
+    <path d="M380 355 C470 355 530 265 620 265"/>
+    <path d="M380 400 C470 400 530 310 620 310"/>
+    <path d="M380 445 C470 445 530 355 620 355"/>
+  </g>
+
+  <g font-family="Arial" font-size="16" fill="#111">
+    <text x="500" y="210" text-anchor="middle">GND</text>
+    <text x="500" y="335" text-anchor="middle">GPIO10 → MOSI</text>
+    <text x="500" y="285" text-anchor="middle">GPIO11 ← MISO</text>
+    <text x="500" y="375" text-anchor="middle">GPIO12 → SCK</text>
+    <text x="500" y="430" text-anchor="middle">GPIO13 → RESET</text>
+  </g>
+
+  <rect x="100" y="535" width="800" height="52" fill="#fff2cc" stroke="#aa8800"/>
+  <text x="500" y="557" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">J5 pin 1 (+5V) is intentionally NOT connected to target VCC.</text>
+  <text x="500" y="578" text-anchor="middle" font-family="Arial" font-size="15">Target voltage must be measured and logic-level compatibility confirmed first.</text>
+</svg>
