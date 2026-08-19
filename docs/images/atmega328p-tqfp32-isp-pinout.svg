@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650">
+  <rect width="900" height="650" fill="white"/>
+  <text x="450" y="42" text-anchor="middle" font-family="Arial" font-size="28" font-weight="bold">ATmega328P-AU TQFP-32 — ISP Reference</text>
+  <text x="450" y="72" text-anchor="middle" font-family="Arial" font-size="16">Pins used by the TUL MCU Firmware Reader first bench test</text>
+
+  <rect x="250" y="120" width="400" height="400" rx="18" fill="#222" stroke="#000" stroke-width="4"/>
+  <circle cx="285" cy="155" r="9" fill="#ddd"/>
+  <text x="450" y="325" text-anchor="middle" fill="white" font-family="Arial" font-size="30" font-weight="bold">ATmega328P-AU</text>
+  <text x="450" y="355" text-anchor="middle" fill="#ccc" font-family="Arial" font-size="18">TQFP-32</text>
+
+  <g font-family="Arial" font-size="17" fill="#111">
+    <text x="70" y="180">Pin 15 — PB3 / MOSI</text>
+    <text x="70" y="230">Pin 16 — PB4 / MISO</text>
+    <text x="70" y="280">Pin 17 — PB5 / SCK</text>
+    <text x="70" y="330">Pin 29 — PC6 / RESET</text>
+    <text x="70" y="380">Pin 4 — VCC</text>
+    <text x="70" y="430">Pin 18 — AVCC</text>
+    <text x="70" y="480">Pins 3,21 — GND</text>
+  </g>
+
+  <g stroke="#444" stroke-width="3">
+    <line x1="250" y1="175" x2="205" y2="175"/>
+    <line x1="250" y1="225" x2="205" y2="225"/>
+    <line x1="250" y1="275" x2="205" y2="275"/>
+    <line x1="250" y1="325" x2="205" y2="325"/>
+    <line x1="650" y1="185" x2="705" y2="185"/>
+    <line x1="650" y1="235" x2="705" y2="235"/>
+    <line x1="650" y1="285" x2="705" y2="285"/>
+  </g>
+
+  <g font-family="Arial" font-size="17" fill="#111">
+    <text x="720" y="190">VCC — pin 4</text>
+    <text x="720" y="240">AVCC — pin 18</text>
+    <text x="720" y="290">GND — pins 3, 21</text>
+  </g>
+
+  <rect x="90" y="555" width="720" height="58" fill="#f2f2f2" stroke="#999"/>
+  <text x="450" y="580" text-anchor="middle" font-family="Arial" font-size="16">Reference only — verify package orientation and target voltage on the actual PCB</text>
+  <text x="450" y="602" text-anchor="middle" font-family="Arial" font-size="16">Before connecting ESP32-S3 GPIO to an unknown target.</text>
+</svg>
