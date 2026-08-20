@@ -56,16 +56,27 @@ Used for board power/programming/USB functions as supported by the board design.
 
 ### microSD
 
-Onboard microSD is available for firmware-image storage. The intended data flow is:
+The WT32-SC01 Plus documentation identifies the onboard microSD interface as SPI and assigns:
+
+| Signal | ESP32-S3 GPIO |
+|---|---:|
+| SD_CS | GPIO41 |
+| SD_MOSI / SD_DI | GPIO40 |
+| SD_SCK / SD_CLK | GPIO39 |
+| SD_MISO / SD_DO | GPIO38 |
+
+These pins are now recorded in `firmware/tul-mcu-reader/board_config.h` and are used by the storage diagnostic. citeturn0search30turn0search33
+
+The intended firmware data flow is:
 
 ```text
 Target MCU
     |
     | Read
     v
-ESP32-S3 RAM
+ESP32-S3 RAM / PSRAM
     |
-    | Save
+    | Stream chunks
     v
 microSD
     |
@@ -109,9 +120,10 @@ The J5 GPIO signals are board GPIO resources, not yet a complete target-MCU prot
 
 ## Current status
 
-The board-level connector pinout is now documented from the supplied PCB pinout:
+The board-level connector pinout is documented:
 
 - J5: +5V, GND, GPIO10, GPIO11, GPIO12, GPIO13, GPIO14, GPIO21
 - J3: +5V, +3.3V, TXD, RXD, EN (RST), GND, GND
+- microSD: CS=GPIO41, MOSI=GPIO40, SCK=GPIO39, MISO=GPIO38
 
 The target-MCU protocol and target connector wiring are still intentionally undefined. No target MCU pin assignment is being assumed at this stage.
