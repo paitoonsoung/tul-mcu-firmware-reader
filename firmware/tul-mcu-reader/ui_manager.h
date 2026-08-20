@@ -27,8 +27,16 @@ bool touch(Display &d, int x, int y, int w, int h) {
     return d.getTouch(&tx, &ty) && tx >= x && tx < x + w && ty >= y && ty < y + h;
 }
 
+// Do not wait forever for a touch controller release.
 template <typename Display>
-void waitRelease(Display &d) { uint16_t x, y; while (d.getTouch(&x, &y)) delay(10); }
+void waitRelease(Display &d, uint32_t timeoutMs = 250) {
+    const uint32_t start = millis();
+    uint16_t x = 0, y = 0;
+    while (d.getTouch(&x, &y) && (millis() - start < timeoutMs)) {
+        delay(5);
+    }
+    delay(20);
+}
 
 template <typename Display>
 void systemInfo(Display &d) {
@@ -162,7 +170,6 @@ void utilityMenu(Display &d) {
             if (touch(d, 312, 50, 135, 42)) { waitRelease(d); networkMenu(d); break; }
             if (touch(d, 18, 105, 135, 42)) { waitRelease(d); storageMenu(d); break; }
             if (touch(d, 165, 105, 135, 42)) { waitRelease(d); engineeringMenu(d); break; }
-            if (touch(d, 312, 50, 135, 42)) { waitRelease(d); break; }
             if (touch(d, 312, 105, 135, 42)) { waitRelease(d); header(d, "ABOUT TUL"); d.setTextColor(TFT_WHITE); d.setCursor(18, 65); d.print("TUL MCU Firmware Reader"); d.setCursor(18, 95); d.print("Standalone Service Instrument"); button(d, 330, 260, 120, 45, "BACK"); while (!touch(d,330,260,120,45)) delay(20); waitRelease(d); break; }
             if (touch(d, 330, 260, 120, 45)) { waitRelease(d); return; }
             delay(20);
