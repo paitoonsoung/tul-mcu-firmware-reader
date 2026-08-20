@@ -20,14 +20,13 @@ static UiState previousState = UiState::MAIN;
 static KeyboardMode keyboardMode = KeyboardMode::SSID;
 static bool uiDirty = true;
 static bool touchWasDown = false;
-static bool formatRunning = false;
-static bool scanRunning = false;
 static String kbValue;
 static String selectedSsid;
 static bool kbShift = true;
 static bool kbPassword = false;
 
-static void header(auto &d, const char *title) {
+template <typename Display>
+static void header(Display &d, const char *title) {
     d.fillScreen(TFT_BLACK);
     d.setTextSize(2);
     d.setTextColor(TFT_CYAN);
@@ -36,7 +35,8 @@ static void header(auto &d, const char *title) {
     d.drawFastHLine(18, 36, 444, TFT_DARKCYAN);
 }
 
-static void button(auto &d, int x, int y, int w, int h, const char *label,
+template <typename Display>
+static void button(Display &d, int x, int y, int w, int h, const char *label,
                    uint16_t color = TFT_CYAN) {
     d.drawRoundRect(x, y, w, h, 6, color);
     d.setTextColor(TFT_WHITE);
@@ -45,23 +45,22 @@ static void button(auto &d, int x, int y, int w, int h, const char *label,
     d.print(label);
 }
 
-static bool hit(auto &d, int x, int y, int w, int h, uint16_t *tx = nullptr,
-                uint16_t *ty = nullptr) {
+template <typename Display>
+static bool hit(Display &d, int x, int y, int w, int h) {
     uint16_t px = 0, py = 0;
     if (!d.getTouch(&px, &py)) return false;
-    if (tx) *tx = px;
-    if (ty) *ty = py;
     return px >= x && px < x + w && py >= y && py < y + h;
 }
 
-static bool pressed(auto &d, uint16_t *tx = nullptr, uint16_t *ty = nullptr) {
-    uint16_t x = 0, y = 0;
-    const bool down = d.getTouch(&x, &y);
+template <typename Display>
+static bool pressed(Display &d, uint16_t &x, uint16_t &y) {
+    uint16_t px = 0, py = 0;
+    const bool down = d.getTouch(&px, &py);
     const bool edge = down && !touchWasDown;
     touchWasDown = down;
     if (edge) {
-        if (tx) *tx = x;
-        if (ty) *ty = y;
+        x = px;
+        y = py;
     }
     return edge;
 }
@@ -74,7 +73,8 @@ static void gotoState(UiState next) {
     }
 }
 
-static void drawSystemInfo(auto &d) {
+template <typename Display>
+static void drawSystemInfo(Display &d) {
     header(d, "TUL SYSTEM INFO");
     d.setTextColor(TFT_WHITE);
     d.setCursor(18, 52); d.printf("CPU       ESP32-S3");
@@ -89,7 +89,8 @@ static void drawSystemInfo(auto &d) {
     button(d, 330, 260, 120, 45, "BACK");
 }
 
-static void drawDisplay(auto &d) {
+template <typename Display>
+static void drawDisplay(Display &d) {
     header(d, "DISPLAY");
     d.setTextColor(TFT_WHITE);
     d.setCursor(18, 55); d.printf("Brightness: %u", settings().brightness);
@@ -103,7 +104,8 @@ static void drawDisplay(auto &d) {
     button(d, 330, 260, 120, 45, "BACK");
 }
 
-static void drawStorage(auto &d) {
+template <typename Display>
+static void drawStorage(Display &d) {
     header(d, "STORAGE");
     d.setTextColor(TFT_WHITE);
     d.setCursor(18, 55); d.printf("Capacity: %llu MB", storageCapacityBytes() / (1024ULL * 1024ULL));
@@ -113,7 +115,8 @@ static void drawStorage(auto &d) {
     button(d, 330, 260, 120, 45, "BACK");
 }
 
-static void drawNetwork(auto &d) {
+template <typename Display>
+static void drawNetwork(Display &d) {
     header(d, "NETWORK");
     d.setTextColor(TFT_WHITE);
     d.setCursor(18, 52); d.printf("WiFi: %s", settings().wifiEnabled ? "ON" : "OFF");
@@ -127,7 +130,8 @@ static void drawNetwork(auto &d) {
     button(d, 330, 260, 120, 45, "BACK");
 }
 
-static void drawEngineering(auto &d) {
+template <typename Display>
+static void drawEngineering(Display &d) {
     header(d, "ENGINEERING MODE");
     d.setTextColor(TFT_WHITE);
     d.setCursor(18, 55); d.printf("RAM   %lu KB free", ESP.getFreeHeap() / 1024UL);
@@ -141,7 +145,8 @@ static void drawEngineering(auto &d) {
     button(d, 330, 260, 120, 45, "BACK");
 }
 
-static void drawUtility(auto &d) {
+template <typename Display>
+static void drawUtility(Display &d) {
     header(d, "TUL UTILITY");
     button(d, 18, 50, 135, 42, "SYSTEM INFO");
     button(d, 165, 50, 135, 42, "DISPLAY");
@@ -152,7 +157,8 @@ static void drawUtility(auto &d) {
     button(d, 330, 260, 120, 45, "BACK");
 }
 
-static void drawMain(auto &d) {
+template <typename Display>
+static void drawMain(Display &d) {
     header(d, "TUL MCU FIRMWARE READER");
     button(d, 35, 70, 190, 70, "MCU READER");
     button(d, 255, 70, 190, 70, "UTILITY");
@@ -162,7 +168,8 @@ static void drawMain(auto &d) {
     d.setTextColor(TFT_CYAN); d.setCursor(255, 250); d.print("TUL SYSTEM");
 }
 
-static void drawAbout(auto &d) {
+template <typename Display>
+static void drawAbout(Display &d) {
     header(d, "ABOUT TUL");
     d.setTextColor(TFT_WHITE);
     d.setCursor(18, 65); d.print("TUL MCU Firmware Reader");
@@ -171,7 +178,8 @@ static void drawAbout(auto &d) {
     button(d, 330, 260, 120, 45, "BACK");
 }
 
-static void drawScan(auto &d) {
+template <typename Display>
+static void drawScan(Display &d) {
     header(d, "WIFI SCAN");
     const int count = networkScanCount();
     const int shown = count > 7 ? 7 : (count > 0 ? count : 0);
@@ -184,7 +192,8 @@ static void drawScan(auto &d) {
     button(d, 330, 260, 120, 45, "BACK");
 }
 
-static void drawFormatConfirm(auto &d) {
+template <typename Display>
+static void drawFormatConfirm(Display &d) {
     header(d, "FORMAT SD");
     d.setTextColor(TFT_RED); d.setCursor(25, 65); d.print("ALL DATA WILL BE ERASED");
     d.setTextColor(TFT_WHITE); d.setCursor(25, 95); d.print("LOCAL ONLY - CONFIRM?");
@@ -192,7 +201,8 @@ static void drawFormatConfirm(auto &d) {
     button(d, 245, 140, 190, 55, "FORMAT", TFT_RED);
 }
 
-static void drawKeyboard(auto &d) {
+template <typename Display>
+static void drawKeyboard(Display &d) {
     header(d, kbPassword ? "WIFI PASSWORD" : "WIFI SSID");
     d.setTextColor(TFT_WHITE); d.setCursor(12, 42);
     if (kbPassword) {
@@ -207,8 +217,7 @@ static void drawKeyboard(auto &d) {
         const int x = 8 + col * 46;
         const int y = 70 + row * 38;
         d.drawRect(x, y, 40, 32, TFT_CYAN);
-        d.setCursor(x + 13, y + 8);
-        d.print(kbShift ? upper[i] : lower[i]);
+        d.setCursor(x + 13, y + 8); d.print(kbShift ? upper[i] : lower[i]);
     }
     for (int i = 0; i < 10; ++i) {
         const int x = 8 + i * 46;
@@ -221,7 +230,8 @@ static void drawKeyboard(auto &d) {
     button(d, 388, 230, 80, 40, "ENTER", TFT_GREEN);
 }
 
-static void drawCurrent(auto &d) {
+template <typename Display>
+static void drawCurrent(Display &d) {
     switch (state) {
         case UiState::MAIN: drawMain(d); break;
         case UiState::UTILITY: drawUtility(d); break;
@@ -247,7 +257,9 @@ static void startKeyboard(KeyboardMode mode, bool password, const String &initia
     gotoState(UiState::KEYBOARD);
 }
 
-static void handleKeyboard(auto &d, uint16_t x, uint16_t y) {
+template <typename Display>
+static void handleKeyboard(Display &d, uint16_t x, uint16_t y) {
+    (void)d;
     if (y >= 70 && y < 184) {
         const int row = (y - 70) / 38;
         const int col = x / 46;
@@ -264,27 +276,27 @@ static void handleKeyboard(auto &d, uint16_t x, uint16_t y) {
         if (x < 100) kbShift = !kbShift;
         else if (x < 288) kbValue += ' ';
         else if (x < 388 && kbValue.length()) kbValue.remove(kbValue.length() - 1);
-        else {
-            if (keyboardMode == KeyboardMode::SSID) {
-                selectedSsid = kbValue;
-                startKeyboard(KeyboardMode::PASSWORD, true);
-            } else {
-                networkSaveCredentials(selectedSsid, kbValue);
-                networkConnectSaved();
-                gotoState(UiState::NETWORK);
-            }
+        else if (keyboardMode == KeyboardMode::SSID) {
+            selectedSsid = kbValue;
+            startKeyboard(KeyboardMode::PASSWORD, true);
+            return;
+        } else {
+            networkSaveCredentials(selectedSsid, kbValue);
+            networkConnectSaved();
+            gotoState(UiState::NETWORK);
+            return;
         }
         uiDirty = true;
     }
 }
 
-static void handlePressed(auto &d, uint16_t x, uint16_t y) {
+template <typename Display>
+static void handlePressed(Display &d, uint16_t x, uint16_t y) {
     switch (state) {
         case UiState::MAIN:
             if (hit(d, 255, 70, 190, 70)) gotoState(UiState::UTILITY);
             else if (hit(d, 35, 165, 190, 70)) gotoState(UiState::ENGINEERING);
             else if (hit(d, 255, 165, 190, 70)) gotoState(UiState::SYSTEM_INFO);
-            else if (hit(d, 35, 70, 190, 70)) { /* MCU reader placeholder */ }
             break;
         case UiState::UTILITY:
             if (hit(d, 18, 50, 135, 42)) gotoState(UiState::SYSTEM_INFO);
@@ -315,10 +327,9 @@ static void handlePressed(auto &d, uint16_t x, uint16_t y) {
         case UiState::FORMAT_CONFIRM:
             if (hit(d, 25, 140, 190, 55)) gotoState(UiState::STORAGE);
             else if (hit(d, 245, 140, 190, 55)) {
-                d.fillScreen(TFT_BLACK); d.setTextColor(TFT_YELLOW); d.setCursor(25, 120); d.print("FORMATTING...");
-                formatRunning = true;
+                d.fillScreen(TFT_BLACK);
+                d.setTextColor(TFT_YELLOW); d.setCursor(25, 120); d.print("FORMATTING...");
                 const bool ok = storageFormat();
-                formatRunning = false;
                 d.setTextColor(ok ? TFT_GREEN : TFT_RED); d.setCursor(25, 160); d.print(ok ? "FORMAT COMPLETE" : "FORMAT FAILED");
                 delay(900);
                 gotoState(UiState::STORAGE);
@@ -326,9 +337,7 @@ static void handlePressed(auto &d, uint16_t x, uint16_t y) {
             break;
         case UiState::NETWORK:
             if (hit(d, 18, 125, 130, 44)) { networkToggleWiFi(); uiDirty = true; }
-            else if (hit(d, 160, 125, 130, 44)) {
-                scanRunning = true; gotoState(UiState::WIFI_SCAN); networkScanWiFi(); scanRunning = false; uiDirty = true;
-            }
+            else if (hit(d, 160, 125, 130, 44)) { networkScanWiFi(); gotoState(UiState::WIFI_SCAN); }
             else if (hit(d, 302, 125, 130, 44)) { networkToggleBLE(); uiDirty = true; }
             else if (hit(d, 18, 185, 130, 44)) startKeyboard(KeyboardMode::SSID, false);
             else if (hit(d, 160, 185, 130, 44)) { networkConnectSaved(); uiDirty = true; }
@@ -349,9 +358,9 @@ static void handlePressed(auto &d, uint16_t x, uint16_t y) {
         }
         case UiState::ENGINEERING:
             if (hit(d, 330, 260, 120, 45)) gotoState(previousState == UiState::ENGINEERING ? UiState::MAIN : previousState);
-            else if (hit(d, 18, 185, 130, 44)) { uiDirty = true; }
+            else if (hit(d, 18, 185, 130, 44)) uiDirty = true;
             else if (hit(d, 160, 185, 130, 44)) { storageBegin(); uiDirty = true; }
-            else if (hit(d, 302, 185, 130, 44)) { uiDirty = true; }
+            else if (hit(d, 302, 185, 130, 44)) uiDirty = true;
             break;
         case UiState::ABOUT:
             if (hit(d, 330, 260, 120, 45)) gotoState(UiState::UTILITY);
@@ -375,7 +384,7 @@ template <typename Display>
 void uiLoop(Display &d) {
     if (uiDirty) drawCurrent(d);
     uint16_t x = 0, y = 0;
-    if (pressed(d, &x, &y)) handlePressed(d, x, y);
+    if (pressed(d, x, y)) handlePressed(d, x, y);
 }
 
 } // namespace tului
