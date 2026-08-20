@@ -26,9 +26,7 @@ void networkBegin() {
     }
 
     WiFi.mode(WIFI_STA);
-    if (settings().autoConnect && savedSsid.length()) {
-        WiFi.begin(savedSsid.c_str(), savedPassword.c_str());
-    }
+    networkConnectSaved();
 }
 
 void networkLoop() {
@@ -50,11 +48,25 @@ void networkToggleWiFi() {
         WiFi.mode(WIFI_OFF);
     } else {
         WiFi.mode(WIFI_STA);
-        if (savedSsid.length()) {
-            WiFi.begin(savedSsid.c_str(), savedPassword.c_str());
-        }
+        networkConnectSaved();
     }
     settingsSave();
+}
+
+void networkSaveCredentials(const String &ssid, const String &password) {
+    savedSsid = ssid;
+    savedPassword = password;
+    prefs.begin("tul-wifi", false);
+    prefs.putString("ssid", savedSsid);
+    prefs.putString("pass", savedPassword);
+    prefs.end();
+}
+
+void networkConnectSaved() {
+    if (!settings().wifiEnabled || savedSsid.isEmpty()) {
+        return;
+    }
+    WiFi.begin(savedSsid.c_str(), savedPassword.c_str());
 }
 
 void networkScanWiFi() {
@@ -85,4 +97,16 @@ const char *networkIP() {
 
 int networkRSSI() {
     return rssiValue;
+}
+
+int networkScanCount() {
+    return WiFi.scanComplete();
+}
+
+String networkScanName(int index) {
+    return WiFi.SSID(index);
+}
+
+int networkScanRSSI(int index) {
+    return WiFi.RSSI(index);
 }
