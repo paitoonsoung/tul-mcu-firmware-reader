@@ -119,6 +119,14 @@ static void showTargetResult(const uint8_t signature[3], bool ispOk) {
     }
 }
 
+static void printMemoryDiagnostic() {
+    Serial.printf("Internal RAM free: %lu KB\n", ESP.getFreeHeap() / 1024UL);
+    Serial.printf("PSRAM free/size: %lu / %lu KB\n", ESP.getFreePsram() / 1024UL, ESP.getPsramSize() / 1024UL);
+    if (ESP.getPsramSize() == 0) {
+        Serial.println("PSRAM NOT INITIALIZED - enable PSRAM in Arduino board settings.");
+    }
+}
+
 void setup() {
     Serial.begin(115200);
     delay(300);
@@ -137,15 +145,14 @@ void setup() {
     Serial.printf("Storage test: %s\n", sdTestOk ? "PASS" : "FAIL");
 
     networkBegin();
-    delay(100);
-    networkLoop();
     haBegin();
 
     Serial.println();
     Serial.println("TUL MCU Firmware Reader");
     Serial.println("ATmega328P ISP Proof of Concept");
-    Serial.println("Utility / Engineering / Network framework enabled");
+    Serial.println("Non-blocking UI state machine enabled");
     Serial.println("No erase/write operations");
+    printMemoryDiagnostic();
 
     isp.begin();
     uint8_t signature[3] = {0};
@@ -165,5 +172,6 @@ void setup() {
 void loop() {
     networkLoop();
     haLoop();
-    delay(50);
+    tului::uiLoop(tft);
+    delay(10);
 }
