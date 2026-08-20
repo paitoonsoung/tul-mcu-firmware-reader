@@ -2,6 +2,7 @@
 
 #include <SD.h>
 #include <SPI.h>
+#include "ff.h"
 #include "board_config.h"
 
 namespace {
@@ -18,7 +19,35 @@ bool storageFormat() {
     if (!ready && !storageBegin()) {
         return false;
     }
-    return SD.format();
+
+    // Arduino-ESP32 3.3.x SDFS has no public format() method.
+    // Use the bundled FatFs formatter while the SD driver is initialized.
+    const FRESULT mountResult = f_mount(nullptr, "0:", 0);
+    if (mountResult != FR_OK) {
+        return false;
+    }
+
+    BYTE work[FF_MAX_SS];
+    const MKFS_PARM options = {
+        static_cast<BYTE>(FM_ANY),
+        0,
+        0,
+        0,
+        0
+    };
+
+    const FRESULT formatResult = f_mkfs("0:", &options, work, sizeof(work));
+    if (formatResult != FR_OK) {
+        // Restore the normal Arduino SD mount before returning.
+        SD.end();
+        ready = storageBegin();
+        return false;
+    }
+
+    // Recreate the Arduino VFS/FatFs mount after formatting.
+    SD.end();
+    ready = storageBegin();
+    return ready;
 }
 
 uint64_t storageCapacityBytes() {
