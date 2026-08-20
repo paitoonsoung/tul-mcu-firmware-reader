@@ -69,7 +69,8 @@ void networkScanWiFi() {
     if (!settings().wifiEnabled) return;
     WiFi.mode(WIFI_STA);
     WiFi.scanDelete();
-    WiFi.scanNetworks(false, true);
+    // Async scan prevents the UI task from blocking during RF scanning.
+    WiFi.scanNetworks(true, true);
 }
 
 void networkToggleBLE() {
