@@ -1,8 +1,10 @@
 #include <Arduino.h>
 #define LGFX_USE_V1
 #include <LovyanGFX.hpp>
+#include <SD.h>
 #include "board_config.h"
 #include "atmega328p_isp.h"
+#include "storage_test.h"
 
 // PanLee ZX3D50CE08S-V16-USRC / WT32-S3-WROVER
 // Display configuration adapted from the proven TUL display code.
@@ -114,6 +116,55 @@ void showBootAnimation() {
     delay(1500);
 }
 
+void showSystemInfo(bool sdOk) {
+    const uint32_t ramFree = ESP.getFreeHeap();
+    const uint32_t psramTotal = ESP.getPsramSize();
+    const uint32_t psramFree = ESP.getFreePsram();
+    const uint32_t flashSize = ESP.getFlashChipSize();
+
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextColor(TFT_CYAN);
+    tft.setTextSize(2);
+    tft.setCursor(20, 18);
+    tft.print("TUL SYSTEM DIAGNOSTIC");
+
+    tft.setTextColor(TFT_WHITE);
+    tft.setCursor(20, 55);
+    tft.printf("RAM FREE   %lu KB", ramFree / 1024UL);
+
+    tft.setCursor(20, 82);
+    tft.printf("PSRAM      %lu / %lu KB",
+               psramFree / 1024UL, psramTotal / 1024UL);
+
+    tft.setCursor(20, 109);
+    tft.printf("FLASH      %lu MB", flashSize / (1024UL * 1024UL));
+
+    tft.setCursor(20, 136);
+    tft.print("microSD    ");
+    tft.setTextColor(sdOk ? TFT_GREEN : TFT_RED);
+    tft.print(sdOk ? "READY" : "NOT READY");
+
+    if (sdOk) {
+        tft.setTextColor(TFT_WHITE);
+        tft.setCursor(20, 163);
+        tft.printf("CARD       %llu MB",
+                   SD.cardSize() / (1024ULL * 1024ULL));
+
+        tft.setCursor(20, 190);
+        tft.printf("FILESYSTEM %llu MB",
+                   SD.totalBytes() / (1024ULL * 1024ULL));
+
+        tft.setCursor(20, 217);
+        tft.printf("USED       %llu MB",
+                   SD.usedBytes() / (1024ULL * 1024ULL));
+    }
+
+    tft.setTextColor(TFT_CYAN);
+    tft.setCursor(20, 270);
+    tft.print("MEMORY / SD TEST COMPLETE");
+    delay(2500);
+}
+
 void showReaderReady() {
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_CYAN);
@@ -144,12 +195,16 @@ void setup() {
     tft.invertDisplay(true);
 
     showBootAnimation();
+
+    const bool sdOk = runStorageAndMemoryTest();
+    showSystemInfo(sdOk);
     showReaderReady();
 
     Serial.println();
     Serial.println("TUL MCU Firmware Reader");
     Serial.println("ATmega328P ISP Proof of Concept");
     Serial.println("Display: ST7796 / Parallel 8-bit");
+    Serial.println("Storage: microSD / SPI");
     Serial.println("No erase/write operations");
 
     isp.begin();
