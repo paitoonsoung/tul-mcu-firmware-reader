@@ -8,3 +8,9 @@ constexpr uint8_t PIN_ISP_SCK = 12;
 constexpr uint8_t PIN_TARGET_RESET = 13;
 
 constexpr uint32_t ISP_HALF_PERIOD_US = 100;
+
+// WT32-SC01 Plus onboard microSD (SPI).
+constexpr uint8_t PIN_SD_CS = 41;
+constexpr uint8_t PIN_SD_MOSI = 40;
+constexpr uint8_t PIN_SD_SCK = 39;
+constexpr uint8_t PIN_SD_MISO = 38;
