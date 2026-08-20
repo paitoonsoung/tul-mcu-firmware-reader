@@ -2,6 +2,9 @@
 
 #include <Arduino.h>
 
+// WiFi.scanComplete() returns -1 while an async scan is running.
+constexpr int NETWORK_SCAN_RUNNING = -1;
+
 void networkBegin();
 void networkLoop();
 void networkToggleWiFi();
