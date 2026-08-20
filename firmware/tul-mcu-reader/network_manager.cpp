@@ -19,12 +19,10 @@ void networkBegin() {
     savedSsid = prefs.getString("ssid", "");
     savedPassword = prefs.getString("pass", "");
     prefs.end();
-
     if (!settings().wifiEnabled) {
         WiFi.mode(WIFI_OFF);
         return;
     }
-
     WiFi.mode(WIFI_STA);
     networkConnectSaved();
 }
@@ -63,50 +61,27 @@ void networkSaveCredentials(const String &ssid, const String &password) {
 }
 
 void networkConnectSaved() {
-    if (!settings().wifiEnabled || savedSsid.isEmpty()) {
-        return;
-    }
+    if (!settings().wifiEnabled || savedSsid.isEmpty()) return;
     WiFi.begin(savedSsid.c_str(), savedPassword.c_str());
 }
 
 void networkScanWiFi() {
-    if (!settings().wifiEnabled) {
-        return;
-    }
+    if (!settings().wifiEnabled) return;
     WiFi.mode(WIFI_STA);
-    WiFi.scanNetworks(true, true);
+    WiFi.scanDelete();
+    WiFi.scanNetworks(false, true);
 }
 
 void networkToggleBLE() {
     settings().bleEnabled = !settings().bleEnabled;
-    if (settings().bleEnabled) {
-        BLEDevice::init("TUL-MCU-Reader");
-    } else {
-        BLEDevice::deinit(true);
-    }
+    if (settings().bleEnabled) BLEDevice::init("TUL-MCU-Reader");
+    else BLEDevice::deinit(true);
     settingsSave();
 }
 
-const char *networkSSID() {
-    return ssidText.c_str();
-}
-
-const char *networkIP() {
-    return ipText.c_str();
-}
-
-int networkRSSI() {
-    return rssiValue;
-}
-
-int networkScanCount() {
-    return WiFi.scanComplete();
-}
-
-String networkScanName(int index) {
-    return WiFi.SSID(index);
-}
-
-int networkScanRSSI(int index) {
-    return WiFi.RSSI(index);
-}
+const char *networkSSID() { return ssidText.c_str(); }
+const char *networkIP() { return ipText.c_str(); }
+int networkRSSI() { return rssiValue; }
+int networkScanCount() { return WiFi.scanComplete(); }
+String networkScanName(int index) { return WiFi.SSID(index); }
+int networkScanRSSI(int index) { return WiFi.RSSI(index); }
