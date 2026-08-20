@@ -1,6 +1,6 @@
 # Arduino IDE Setup
 
-This document records the build environment for the current firmware proof-of-concept.
+This document records the build environment for the current firmware.
 
 ## Target board
 
@@ -17,15 +17,15 @@ Open:
 firmware/tul-mcu-reader/tul-mcu-reader.ino
 ```
 
-The sketch currently uses only the Arduino core plus project-local source files:
+## Libraries
 
-```cpp
-#include <Arduino.h>
-#include "board_config.h"
-#include "atmega328p_isp.h"
-```
+The current firmware uses:
 
-No third-party Arduino library is required by the current ISP proof-of-concept.
+- ESP32 Arduino core APIs: `WiFi`, `Preferences`, `SD`, `SPI`, BLE.
+- **LovyanGFX** for the ST7796 parallel display and FT5x06 touch controller.
+- **PubSubClient** is optional. Install it to enable MQTT/Home Assistant telemetry and discovery.
+
+Keep dependency versions recorded from the physical development PC before declaring a build reproducible.
 
 ## Serial Monitor
 
@@ -34,12 +34,11 @@ Baud rate: 115200
 Line ending: any
 ```
 
-Expected diagnostic output after a successful target connection:
+Expected startup diagnostics include:
 
 ```text
 TUL MCU Firmware Reader
-ATmega328P ISP Proof of Concept
-No erase/write operations
+Utility / Engineering / Network framework enabled
 ATmega328P signature: 1E 95 0F
 TARGET OK
 ```
@@ -59,17 +58,13 @@ The exact Arduino IDE option set must be recorded from the physical development 
 | PSRAM | To be recorded | Pending bench verification |
 | Upload Speed | To be recorded | Pending bench verification |
 | Core version | To be recorded | Pending bench verification |
+| LovyanGFX version | To be recorded | Pending bench verification |
+| PubSubClient version | To be recorded | Optional / pending bench verification |
 
-## Dependency policy
+## Important safety boundary
 
-Keep the proof-of-concept dependency-free where possible. If an external library is introduced later, record:
-
-1. Library name.
-2. Version.
-3. Why it is required.
-4. Where it is used.
-5. Whether it is mandatory or optional.
+The local SD format operation is intentionally not exposed through Home Assistant. Target MCU erase/write is also still disabled until the ATmega328P write path is independently bench-tested.
 
 ## Build reproducibility
 
-When the first successful physical test is completed, update this file with the exact Arduino IDE settings and ESP32 Arduino core version used for that successful build. This prevents the project from depending on undocumented local settings.
+When the next successful physical test is completed, update this file with the exact Arduino IDE settings, ESP32 Arduino core version, LovyanGFX version and optional PubSubClient version used for that build.
