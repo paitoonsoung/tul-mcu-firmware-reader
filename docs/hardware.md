@@ -11,6 +11,8 @@
 
 The physical prototype is already assembled in its enclosure. The repository uses the actual prototype as the hardware reference; connector assignments below are taken from the PCB pinout provided for this board.
 
+For photographs of the actual prototype, connectors, target boards, and test setups, see [Hardware Photos](photos.md).
+
 ## Onboard connectors
 
 ### J5 — I/O
@@ -34,23 +36,15 @@ This connector is the primary candidate for exposing GPIO to the external target
 
 Pin order shown on the PCB pinout:
 
-### J3 — DEBUG
-
-Pin order shown on the PCB pinout:
-
-| Pin | Signal           |
-| --: | ---------------- |
-|   1 | 5V               |
-|   2 | 3V3              |
-|   3 | UART_DEV(0) TxD |
-|   4 | UART_DEV(0) RxD |
-|   5 | RESET (EN)       |
-|   6 | BOOT (GPIO0)     |
-|   7 | GND              |
-
-J3 is treated as the board debug/serial connector, not as the target-MCU programming connector.
-
-J3 is treated as the board debug/serial connector, not as the target-MCU programming connector.
+| Pin | Signal |
+|---:|---|
+| 1 | 5V |
+| 2 | 3V3 |
+| 3 | UART_DEV(0) TxD |
+| 4 | UART_DEV(0) RxD |
+| 5 | RESET (EN) |
+| 6 | BOOT (GPIO0) |
+| 7 | GND |
 
 J3 is treated as the board debug/serial connector, not as the target-MCU programming connector.
 
@@ -73,7 +67,7 @@ The WT32-SC01 Plus documentation identifies the onboard microSD interface as SPI
 | SD_SCK / SD_CLK | GPIO39 |
 | SD_MISO / SD_DO | GPIO38 |
 
-These pins are now recorded in `firmware/tul-mcu-reader/board_config.h` and are used by the storage diagnostic. citeturn0search30turn0search33
+These pins are now recorded in `firmware/tul-mcu-reader/board_config.h` and are used by the storage diagnostic.
 
 The intended firmware data flow is:
 
@@ -131,7 +125,7 @@ The J5 GPIO signals are board GPIO resources, not yet a complete target-MCU prot
 The board-level connector pinout is documented:
 
 - J5: +5V, GND, GPIO10, GPIO11, GPIO12, GPIO13, GPIO14, GPIO21
-- J3: +5V, +3.3V, TXD, RXD, EN (RST), GND, GND
+- J3: +5V, 3V3, UART_DEV(0) TxD, UART_DEV(0) RxD, RESET (EN), BOOT (GPIO0), GND
 - microSD: CS=GPIO41, MOSI=GPIO40, SCK=GPIO39, MISO=GPIO38
 
 The target-MCU protocol and target connector wiring are still intentionally undefined. No target MCU pin assignment is being assumed at this stage.
