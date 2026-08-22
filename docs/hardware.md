@@ -34,15 +34,21 @@ This connector is the primary candidate for exposing GPIO to the external target
 
 Pin order shown on the PCB pinout:
 
+### J3 — DEBUG
+
+Pin order shown on the PCB pinout:
+
 | Pin | Signal |
-Pin	Description
-1	5V
-2	3V3
-3	UART_DEV(0) TxD
-4	UART_DEV(0) RxD
-5	RESET (EN)
-6	BOOT (GPIO0)
-7	GND
+|---:|---|
+| 1 | 5V |
+| 2 | 3V3 |
+| 3 | UART_DEV(0) TxD |
+| 4 | UART_DEV(0) RxD |
+| 5 | RESET (EN) |
+| 6 | BOOT (GPIO0) |
+| 7 | GND |
+
+J3 is treated as the board debug/serial connector, not as the target-MCU programming connector.
 
 J3 is treated as the board debug/serial connector, not as the target-MCU programming connector.
 
