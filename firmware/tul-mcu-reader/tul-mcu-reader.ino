@@ -39,7 +39,7 @@ public:
         touch.x_min = 0; touch.x_max = 319;
         touch.y_min = 0; touch.y_max = 479;
         touch.pin_int = 7;
-        touch.pin_rst = 4;              // shared with LCD reset
+        touch.pin_rst = -1;             // GPIO4 is reserved for the LCD reset line.
         touch.bus_shared = false;
         touch.offset_rotation = 0;
         touch.i2c_port = 0;              // WT32-SC01 PLUS uses I2C0
